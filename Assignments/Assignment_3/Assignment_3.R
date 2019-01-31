@@ -14,15 +14,14 @@ vector2 = c(5,6,7,8,4,3,2,1,3,10)
 
 vector1*vector2
 
-getwd
 
-list.files()
 
 dat = read.csv("../../../Data_Course/Data/thatch_ant.csv")
 names(dat)
 
 #why are these plots different???
 plot(x=dat$Headwidth..mm., y=dat$Mass)
+
 plot(x=dat$Size.class, y=dat$Mass)
 
 
@@ -59,10 +58,12 @@ plot(nums_factor)
 
 # Let's modify and save these plots. Why not!?
 ?plot()
+
 plot(nums, main = "My Title", xlab = "My axis label", ylab = "My other axis label")
 
 
 ?jpeg()
+
 
 
 dev.off()
@@ -106,6 +107,7 @@ col3 = factor(c(1,2,3,4)) # see how we can designate something as a factor
 
 # here's the data frame command:
 data.frame(Clothes = col1, Numbers = col2, Factor_numbers = col3) # colname = vector, colname = vector....
+
 df1 = data.frame(Clothes = col1, Numbers = col2, Factor_numbers = col3) # assign to df1
 df1 # look at it...note column names are what we gave it.
 
@@ -116,7 +118,7 @@ df1 # look at it...note column names are what we gave it.
 
 
 str(dat)
-col1 = Colony
+col1 = dat$Colony
 col2 = c("1-20")
 dat3 = data.frame(Colony = dat$Colony, Mass = dat$Mass)
 
@@ -189,7 +191,7 @@ dat[dat$Colony %in% c(1,2),]
 dat[dat$Mass >= 100,]
 
 dat[dat$Colony %in% c(1,4,7),]
-headwidth_vs_mass= plot(x=df3$Colony,y=df3$Mass,col=df3$Colony)
+headwidth_vs_mass= plot(x=dat3$Colony,y=dat3$Mass,col=dat3$Colony)
 
 
 ############ YOUR HOMEWORK ASSIGNMENT ##############
@@ -207,7 +209,7 @@ sink(file = "test.txt")
 dat$Colony
 sink(NULL)
 
-
+getwd()
 # 3.  Subset the thatch ant data set to only include ants from colony 1 and colony 2
 dat4= dat[dat$Colony %in% c(1,2),]
 
