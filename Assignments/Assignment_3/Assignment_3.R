@@ -189,15 +189,14 @@ dat[dat$Colony %in% c(1,2),]
 dat[dat$Mass >= 100,]
 
 dat[dat$Colony %in% c(1,4,7),]
-
+headwidth_vs_mass= plot(x=df3$Colony,y=df3$Mass,col=df3$Colony)
 
 
 ############ YOUR HOMEWORK ASSIGNMENT ##############
 
 # 1.  Make a scatterplot of headwidth vs mass. See if you can get the points to be colored by "Colony"
-headwidth_vs_mass= plot(x=df3$Colony,y=df3$Mass,col=df3$Colony)
 
-
+headwidth_vs_mass= plot(x=dat3$Colony, y=dat3$Mass, col=dat3$Colony)
 # 2.  Write the code to save it (with meaningful labels) as a jpeg file
 
 jpeg(file= "headwidth_vs_mass.jpeg") #file name and location there are three lines min. for doing a jpeg
