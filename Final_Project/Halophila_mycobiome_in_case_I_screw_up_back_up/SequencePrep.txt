@@ -1,0 +1,13 @@
+
+#### Run ITSxpress on all fwd and rev files ####
+
+# Trim just fungal ITS1 regions
+
+cd ./Fastqs
+for i in ./Fwd/*.fastq.gz; do itsxpress --fastq $i  --outfile $i.FungalITS1.fastq.gz --region ITS1 --taxa Fungi -s --threads 10 --log $1.ITSx.log; done
+for i in ./Rev/*.fastq.gz; do itsxpress --fastq $i  --outfile $i.FungalITS1.fastq.gz --region ITS1 --taxa Fungi -s --threads 10 --log $i.ITSx.log; done
+
+#### Use these trimmed files with DADA2 ####
+
+
+
