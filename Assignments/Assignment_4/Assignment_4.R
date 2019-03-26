@@ -26,5 +26,9 @@ class(its$Lat)
 hist(its$Ecosystem)
 plot(its, xlab= "Ecosystem", ylab= "Lat", x=its$Ecosystem, y=its$Lat)
 
-png(filename = "./../../../../Desktop/Data_Course_ZUSHI/Assignments/Assignment_4/silly_boxplot.png")
+png(filename = "./../Assignment_4/silly_boxplot.png")
+plot(its, xlab= "Ecosystem", ylab= "Lat", x=its$Ecosystem, y=its$Lat)
 dev.off()
+
+
+?png
