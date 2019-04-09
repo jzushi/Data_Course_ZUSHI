@@ -63,6 +63,9 @@ MaxHP200 <- max(Disp$hp)
 # 11. Prints the calculations in readable format
 MaxHP <- c(MaxHPoriginal, MaxHPautos, MaxHP200)
 
-write.table(MaxHP, file = "hp_maximums.txt", sep = "\t",
-            row.names = TRUE, col.names = NA)
+HPRows <- make.names(c("MaxHPoriginal", "MaxHPautos", "MaxHP200"), unique = TRUE)
+# HPCol <- make.names(c("Data_frame", "MaxHP"), unique = TRUE)
+write.table(MaxHP, file = "hp_maximums.txt", sep = "\t", 
+            row.names = HPRows, col.names = as.character("Data_Frame_and_HP"))
+
 
