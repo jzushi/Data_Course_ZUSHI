@@ -1,0 +1,3 @@
+load("/Users/jzushi/Desktop/Data_Course_ZUSHI/Final_Project/Halophila_mycobiome/halo_nochim.rds")
+load("/Users/jzushi/Desktop/Data_Course_ZUSHI/Final_Project/Halophila_mycobiome/halo_seqtab.rds")
+load("/Users/jzushi/Desktop/Data_Course_ZUSHI/Final_Project/Halophila_mycobiome/seqtab_w_taxa.RDS")
