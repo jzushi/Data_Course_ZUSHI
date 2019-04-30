@@ -1,3 +1,30 @@
+---
+title: "Final Project"
+author: "Jzushi"
+date: "4/16/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Seagrass-associated Fungal Communities and Distributions
+
+### Marine fungal biodiversity remains vastly understudied, even less is known of their biogeography and the processes responsible for driving these distributions in marine environments. Here we investigate the fungal communities associated with the seagrass Enhalus acoroides collected from Singapore and Peninsular Malaysia, to test the hypothesis that fungal communities are homogeneous throughout the study area. By doing so we also increase our knowledge of marine fungal diversity in an understudied region of the world.
+
+### The samples that were collected from Singapore and Penisular Malaysia were sequenced and analyzed. Analysis of the data was done using three different scripts to:
+### 1. Clean up the data
+  Script 01_raw_data_to_taxonomy.R loads the packages and the data which was then cleaned, filted, and trimmed using dada2, in order to assign it to a taxonomy and save it as an RDS file 
+  
+### 2. Format the data into a phyloseq object to prepare for analysis
+   Script 02_creating_phyloseq.R loads packages and the RDS file that was created form the first script to            further clean the data, create it into a phyloseq object, and save it as an RDS file 
+  
+### 3. Analyze the data and create visual objects to intrepret the information. 
+  Script 03_analyzing_phyloseq.R loads packages and the RDS file we created from the phyloseq object in       the previous script to analyze our data and create graphs 
+
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+
 # Load packages
 library(vegan)
 library(tidyverse)
@@ -8,8 +35,11 @@ library(tidyr)
 library(ggplot2)
 library(readxl)
 library(plyr)
+```
 
-## Loaded and played around with data
+## Loaded and explored the data to visualize the richness of the samples
+
+```{r, warning=FALSE, include=FALSE}
 ps <- readRDS("../Back_up_Halophila_mycobiome/phyloseq_output.RDS")
 ps
 ntaxa(ps)
@@ -28,10 +58,19 @@ sample_sums(ps)[1:10]
 taxa_sums(ps)[1:10]
 get_taxa(ps, sample_names(ps)[5])[1:10]
 get_sample(ps, taxa_names(ps)[5])[1:10]
+```
 
+
+```{r, warning=FALSE}
 plot_richness(ps,measures="Shannon",color="Country")
+```
+
+Cleaned our data a bit more by removing blanks and subsetting to only be from the fungi kingdom
+
+```{r, warning=FALSE, include=FALSE}
 
 ## removed blanks from samples
+
 ps2 = subset_samples(ps,Location != "Blank")
 
 ## removed everything that wasn't in k__Fungi
@@ -43,14 +82,18 @@ ps4 = subset_taxa(ps3, Phylum != "NA")
 ## removed NA from genus
 ps5 = subset_taxa(ps4, Genus != "NA")
 
-## plotted richness
+
+## plotted richness ##
+
 ps6 = plot_richness(ps5,measures="Shannon",color="Country")
+
 
 
 ps6 + geom_boxplot(data = ps6$data, aes(x = "Samples", y = value, color = NULL), alpha = 0.1)
 
 
-## abundance bar plots
+## abundance bar plots ##
+
 TopNOTUs = names(sort(taxa_sums(ps5), TRUE)[1:10])
 ent10 = prune_taxa(TopNOTUs, ps5)
 plot_bar(ent10, "Phylum", fill = "Location", facet_grid = Phylum ~ Genus)
@@ -60,9 +103,12 @@ plot_bar(ent10, "Genus", fill = "Location", facet_grid = Phylum ~ Location)
 plot_bar(ent10, "Abundance", fill = "Location", facet_grid = Phylum ~ Location)
 
 plot_bar(ps5, x="Genus", y="Abundance", fill=NULL)
-
+```
 ## Preprocessing abundance data
+Removed samples that are not present at least once.
+Pruned and subset the taxa to be in the phylums Ascomycota and Basidiomycota since they were most abundant. 
 
+```{r, warning=FALSE, include=FALSE}
 # prune OTUs that are not present in at least one sample
 PS = prune_taxa(taxa_sums(ps5) > 0, ps5)
 
@@ -117,26 +163,44 @@ GP = subset_samples(ps5,sample_sums(ps5)>0)
 
 
 top5ph = sort(tapply(taxa_sums(GP), tax_table(GP)[, "Phylum"], sum), TRUE)[1:5]
+```
 
-# Network plotting
-dist.test = distance(GP, method = "jaccard")
-plot(dist.test)
+## Network plotting
+Plotted a network using a jaccard method with a max distance of 0.85
 
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+# dist.test = distance(GP, method = "jaccard")
+# plot(dist.test)
 ig = make_network(GP, distance  = "jaccard", max.dist = 0.85)
-plot_network(ig, physeq = GP, color = "Location", shape = "Source", line_weight = 0.4)
-ggsave("../Back_up_Halophila_mycobiome/network1.png", dpi = 300)
+```
 
+```{r, warning=FALSE}
+plot_network(ig, physeq = GP, color = "Location", shape = "Source", line_weight = 0.4)
+```
+
+```{r, include=FALSE}
+ggsave("../Back_up_Halophila_mycobiome/network1.png", dpi = 300)
+```
 # Using top 100
+Plotted the network of the top 100 taxa samples 
+```{r, warning=FALSE, include=FALSE}
 GP100 = prune_taxa(names(sort(taxa_sums(GP)>0, TRUE))[1:100], GP)
 GP100 = prune_taxa(names(sort(taxa_sums(GP)!="NA", TRUE))[1:100], GP)
 GP100 = prune_samples(names(sort(sample_sums(GP)>0, TRUE))[1:100], GP)
 GP100 = prune_samples(names(sort(sample_sums(GP)!="NA", TRUE))[1:100], GP)
 jg = make_network(GP100, max.dist = 0.7)
-
+```
+```{r, warning=FALSE}
 plot_network(jg, physeq = GP100, color = "Location", shape = "Source", line_weight = 0.4, label = NULL)
+```
+```{r, include=FALSE}
 ggsave("../Back_up_Halophila_mycobiome/networktop100.png", dpi = 300)
+```
 
-# Principal Components Analysis
+
+## Principal Components Analysis
+Ran an analysis to produce an ordination plot with limits being -10,10
+```{r, warning=FALSE, include=FALSE}
 pc_matrix = (decostand(otu_table(GP), method = "total", MARGIN = 1))
 rowSums(pc_matrix)
 summary(colSums(pc_matrix))
@@ -145,10 +209,15 @@ pc_matrix = pc_matrix[,good.cols]
 
 
 pc <- prcomp(pc_matrix ,scale. = TRUE, center = TRUE)
+```
+```{r}
 plot_ordination(GP, pc, color= "Location") + lims(x=c(-10,10),y=c(-10,10))
+```
 
 
-# Merged by source and location 
+## Merged by source and location 
+Repaired the values of source and location, removed the samples with nothing in it, and converted it to relative abundance to edit the taxon names to the correct format. 
+```{r, warning=FALSE, include=FALSE}
 variable1 = as.character(get_variable(GP, "Source"))
 variable2 = as.character(get_variable(GP, "Location"))
 sample_data(GP)$NewPastedVar <- mapply(paste, variable1, variable2, collapse = "_", sep = "_")
@@ -173,13 +242,20 @@ GP.M = transformSampleCounts(GP.M, function(OTU) OTU/sum(OTU))
 # Edit taxon names
 GP.M@tax_table@.Data[,"Phylum"] <- as.character(gsub("p__","",GP.M@tax_table@.Data[,"Phylum"]))
 GP.M@tax_table@.Data[,"Class"] <- as.character(gsub("c__","",GP.M@tax_table@.Data[,"Class"]))
+```
 
-
-# Bar plot
+## Bar plot
+Created a bar plot showing the location and class as a function of sample source. 
+```{r, warning=FALSE}
 plot_bar(GP.M, fill = "Class", x= "Location") + facet_grid(~Source)
+```
+```{r, include=FALSE}
 ggsave("../Back_up_Halophila_mycobiome/enhalus_phylum_barplot.png", dpi = 300)
 
+```
 
-
+## Conclusion 
+Fungal communities associated with the seagrass Enhalus acoroides show a pattern of similarity in distance decay, and significant differences in the fungal community composition between the individual sampling sites can be detected.
+Mantel tests suggest that dispersal limitations structure fungal communities, and we suggest that these limitations coupled with habitat differences drive the observed differences in fungal community structure. Considering the acknowledged roles fungi play in promoting and maintaining plant health, we recommend that future seagrass restoration and conservation initiatives take fungal community structures into account. To maximize success of these initiatives, fungal communities should be matched as closely as possible between donor and recipient sites.
 
 
